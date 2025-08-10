@@ -26,6 +26,7 @@ def upgrade() -> None:
         sa.Column("last_name", sa.String, nullable=False),
         sa.Column("email", sa.String, unique=True, nullable=False),
         sa.Column("phone", sa.String(15), unique=True, nullable=False),
+        sa.Column("role", sa.String, nullable=False, server_default="patient"),
         sa.Column("password", sa.String, nullable=False)
     )
 

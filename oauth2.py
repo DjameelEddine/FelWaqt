@@ -38,12 +38,16 @@ def verify_access_token(token: str, credentials_exception):
 
         # retrieve id since it's the only component of the token
         id = payload.get("user_id")
+        role = payload.get("role")
 
         if not id:
             raise credentials_exception
         
+        if not role:
+            raise credentials_exception
+        
         # pydantic model to validate token data (payload)
-        token_data = schemas.TokenData(id=id)
+        token_data = schemas.TokenData(id=id, role=role)
 
     except JWTError:
         raise credentials_exception
@@ -55,22 +59,16 @@ def verify_access_token(token: str, credentials_exception):
 # it automatically extracts the token from the authorization header
 # "WWW-Authenticate": "Bearer" informs the client to send a bearer token
 def get_current_user(token: str=Depends(oauth2_scheme), db:Session=Depends(get_db)):
-    credential_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                         detail="Could not validate credentials",
-                                         headers={"WWW-Authenticate": "Bearer"})
-    
-    token_data = verify_access_token(token, credential_exception)
+    cred_exc = HTTPException(status_code=401, detail="Could not validate credentials", headers={"WWW-Authenticate": "Bearer"})
+    token_data = verify_access_token(token, cred_exc)
 
+    if token_data.role == "doctor":
+        user = db.query(models.Doctor).filter_by(id=token_data.id).first()
+    elif token_data.role == "patient":
+        user = db.query(models.Patient).filter_by(id=token_data.id).first()
+    else:
+        raise cred_exc
 
-    # extract logged in user for more DB operations
-    doctor = db.query(models.Doctor).filter(models.Doctor.id == token_data.id).first()
-  
-    if not doctor:
-        patient = db.query(models.Patient).filter(models.Patient.id == token_data.id).first()
-        
-        if not patient:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail="User With Received Credentials Doesn't Exist !")
-        return patient
-
-    return doctor
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user

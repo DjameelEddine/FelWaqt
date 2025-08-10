@@ -18,6 +18,7 @@ class DoctorBase(BaseModel):
     street : str
     postal_code : str
     personal_picture : str
+    role: Optional[str] = "doctor"
 
 class DoctorCreate(DoctorBase):
     password: str
@@ -43,6 +44,7 @@ class PatientBase(BaseModel):
     last_name: str
     email: EmailStr
     phone: str
+    role: Optional[str] = "patient"
 
 class PatientCreate(PatientBase):
     password: str
@@ -105,3 +107,4 @@ class Token(BaseModel):
 # what payload data does the token embeds
 class TokenData(BaseModel):
     id : Optional[int]
+    role: Optional[str]

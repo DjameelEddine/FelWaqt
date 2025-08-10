@@ -12,6 +12,7 @@ class Patient(Base):
     last_name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
     phone = Column(String(15), nullable=False, unique=True) # frontend phone validation
+    role = Column(String, nullable=False, server_default=text("patient"))
     password = Column(String, nullable=False)
 
 
@@ -28,6 +29,7 @@ class Doctor(Base):
     street = Column(String(50), nullable=False)
     postal_code = Column(String(10), nullable=False)
     personal_picture = Column(String(200), unique=True) # href to the image
+    role = Column(String, nullable=False, server_default=text("doctor"))
     password = Column(String, nullable=False)
 
 

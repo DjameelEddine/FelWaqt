@@ -34,12 +34,12 @@ def create_doctor(doctor: DoctorCreate, db: Session=Depends(get_db)):
 def get_doctor_patients(db: Session=Depends(get_db),
                  current_doctor : models.Doctor=Depends(get_current_user)):
     
-    if not hasattr(current_doctor, "specialty") or current_doctor.specialty is None:
+    if current_doctor.role != "doctor": #type: ignore
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Method concerns doctors only"
         )
-                 
+
     doctor_appointments = db.query(models.Appointment).filter(models.Appointment.doctor_id == current_doctor.id).all()
     doctor_patients_ids = [appointment.patient_id for appointment in doctor_appointments]
 
@@ -53,8 +53,8 @@ def get_doctor_patients(db: Session=Depends(get_db),
 
 @router.get("/appointments", response_model=List[AppointmentOut])
 def get_appointments(db: Session=Depends(get_db), current_doctor: models.Doctor=Depends(get_current_user)):
-
-    if not hasattr(current_doctor, "specialty") or current_doctor.specialty is None:
+    print (current_doctor.role, type(current_doctor.role))
+    if current_doctor.role != "doctor": #type: ignore
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Method concerns doctors only"
@@ -73,7 +73,7 @@ def get_appointments(db: Session=Depends(get_db), current_doctor: models.Doctor=
 def get_feedbacks(db: Session=Depends(get_db),
                   current_doctor:models.Doctor=Depends(get_current_user)):
     
-    if not hasattr(current_doctor, "specialty") or current_doctor.specialty is None:
+    if current_doctor.role != "doctor": #type: ignore
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Method concerns doctors only"
@@ -107,7 +107,7 @@ def get_doctor(id: int, db: Session=Depends(get_db)):
 def delete_doctor(id: int, db: Session=Depends(get_db),
                   current_doctor: models.Doctor=Depends(get_current_user)):
     
-    if not hasattr(current_doctor, "specialty") or current_doctor.specialty is None:
+    if current_doctor.role != "doctor": #type: ignore
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Method concerns doctors only"
@@ -133,7 +133,7 @@ def delete_doctor(id: int, db: Session=Depends(get_db),
 def update_doctor(id: int, new_doctor: DoctorUpdate, db:Session=Depends(get_db),
                   current_doctor:models.Doctor=Depends(get_current_user)):
     
-    if not hasattr(current_doctor, "specialty") or current_doctor.specialty is None:
+    if current_doctor.role != "doctor": #type: ignore
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Method concerns doctors only"
@@ -169,12 +169,11 @@ def update_doctor(id: int, new_doctor: DoctorUpdate, db:Session=Depends(get_db),
 def update_appointment(appointment_id: int, new_appointment: AppointmentsUpdate, db:Session=Depends(get_db), 
                        current_doctor:models.Doctor=Depends(get_current_user)):
         
-    if not hasattr(current_doctor, "specialty") or current_doctor.specialty is None:
+    if current_doctor.role != "doctor": #type: ignore
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Method concerns doctors only"
-        )
-    
+        )    
     
     target_appointment_query = db.query(models.Appointment).filter(models.Appointment.id == appointment_id)
     target_appointment = target_appointment_query.first()
@@ -208,7 +207,7 @@ def update_appointment(appointment_id: int, new_appointment: AppointmentsUpdate,
 def delete_appointment(appointment_id: int, db: Session=Depends(get_db),
                        current_doctor=Depends(get_current_user)):
     
-    if not hasattr(current_doctor, "specialty") or current_doctor.specialty is None:
+    if current_doctor.role != "doctor": #type: ignore
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Method concerns doctors only"
@@ -237,7 +236,7 @@ def delete_appointment(appointment_id: int, db: Session=Depends(get_db),
 def confirm_or_done_appointment(appointment_id: int, confirm_or_done: ConfirmAppointment, db:Session=Depends(get_db),
                      current_doctor: models.Doctor=Depends(get_current_user)):
     
-    if not hasattr(current_doctor, "specialty") or current_doctor.specialty is None:
+    if current_doctor.role != "doctor": #type: ignore
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Method concerns doctors only"
@@ -268,7 +267,7 @@ def confirm_or_done_appointment(appointment_id: int, confirm_or_done: ConfirmApp
 def confirm_reschedule(appointment_id: int, db:Session=Depends(get_db),
                      current_doctor: models.Doctor=Depends(get_current_user)):
     
-    if not hasattr(current_doctor, "specialty") or current_doctor.specialty is None:
+    if current_doctor.role != "doctor": #type: ignore
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Method concerns doctors only"
@@ -305,7 +304,7 @@ def confirm_reschedule(appointment_id: int, db:Session=Depends(get_db),
 def reject_reschedule(appointment_id: int, db: Session=Depends(get_db),
                        current_doctor=Depends(get_current_user)):
     
-    if not hasattr(current_doctor, "specialty") or current_doctor.specialty is None:
+    if current_doctor.role != "doctor": #type: ignore
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Method concerns doctors only"

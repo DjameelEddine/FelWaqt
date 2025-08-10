@@ -29,7 +29,8 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                                 detail="Invalid Credentials")
     
-        access_token = oauth2.create_access_token(payload={"user_id": doctor.id})
+        access_token = oauth2.create_access_token(payload={"user_id": doctor.id, "role": "doctor"})
+        print(doctor.role)
 
         return {"access_token": access_token, "token_type": "bearer"}
     
@@ -40,6 +41,7 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Invalid Credentials")
     
-    access_token = oauth2.create_access_token(payload={"user_id": patient.id})
+    access_token = oauth2.create_access_token(payload={"user_id": patient.id, "role": "patient"})
+    print(patient.role)
     
     return {"access_token": access_token, "token_type": "bearer"}

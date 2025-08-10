@@ -31,6 +31,7 @@ def upgrade() -> None:
         sa.Column("street", sa.String(50), nullable=False),
         sa.Column("postal_code", sa.String(10), nullable=False),
         sa.Column("personal_picture", sa.String(200), unique=True),
+        sa.Column("role", sa.String, nullable=False, server_default="doctor"),
         sa.Column("password", sa.String, nullable=False)
     )
 
